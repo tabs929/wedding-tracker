@@ -44,10 +44,12 @@ Your code is now committed locally. Follow these steps to deploy:
 4. **Add Environment Variables:**
    Click "Environment" and add:
    ```
-   MONGODB_URI = mongodb+srv://tarunbagewadi99_db_user:3gsBRwWyQY3ku5KT@cluster0.ra1ishi.mongodb.net/wedding-tracker?retryWrites=true&w=majority&appName=Cluster0
+   MONGODB_URI = <YOUR_MONGODB_CONNECTION_STRING_FROM_ATLAS>
    PORT = 5001
    NODE_ENV = production
    ```
+   
+   **⚠️ SECURITY NOTE:** Never commit your actual MongoDB URI to Git! Get it from MongoDB Atlas Dashboard → Connect → Drivers
 
 5. **Click "Create Web Service"**
 
