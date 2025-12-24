@@ -8,6 +8,7 @@ export interface IMember {
 
 export interface IFamily extends Document {
   familyName: string;
+  event: 'Engagement' | 'Devkarya' | 'Sangeet' | 'Marriage morning' | 'Marriage afternoon';
   members: IMember[];
   createdAt: Date;
   updatedAt: Date;
@@ -36,6 +37,11 @@ const FamilySchema = new Schema<IFamily>(
       type: String,
       required: true,
       trim: true
+    },
+    event: {
+      type: String,
+      enum: ['Engagement', 'Devkarya', 'Sangeet', 'Marriage morning', 'Marriage afternoon'],
+      required: true
     },
     members: [MemberSchema]
   },

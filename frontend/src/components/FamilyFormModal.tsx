@@ -1,23 +1,28 @@
 import { useState, useEffect } from 'react';
-import type { Family, Member } from '../types';
+import type { Family, Member, EventType } from '../types';
 
 interface FamilyFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { familyName: string; members: Member[] }) => void;
+  onSubmit: (data: { familyName: string; event: EventType; members: Member[] }) => void;
   family?: Family | null;
 }
 
+const EVENTS: EventType[] = ['Engagement', 'Devkarya', 'Sangeet', 'Marriage morning', 'Marriage afternoon'];
+
 const FamilyFormModal = ({ isOpen, onClose, onSubmit, family }: FamilyFormModalProps) => {
   const [familyName, setFamilyName] = useState('');
+  const [event, setEvent] = useState<EventType>('Engagement');
   const [members, setMembers] = useState<Member[]>([]);
 
   useEffect(() => {
     if (family) {
       setFamilyName(family.familyName);
+      setEvent(family.event || 'Engagement');
       setMembers(family.members);
     } else {
       setFamilyName('');
+      setEvent('Engagement');
       setMembers([]);
     }
   }, [family, isOpen]);
@@ -50,7 +55,7 @@ const FamilyFormModal = ({ isOpen, onClose, onSubmit, family }: FamilyFormModalP
       alert('Please fill in all member names');
       return;
     }
-    onSubmit({ familyName, members });
+    onSubmit({ familyName, event, members });
     onClose();
   };
 
@@ -86,6 +91,24 @@ const FamilyFormModal = ({ isOpen, onClose, onSubmit, family }: FamilyFormModalP
               placeholder="Enter family name"
               required
             />
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Event *
+            </label>
+            <select
+              value={event}
+              onChange={(e) => setEvent(e.target.value as EventType)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              required
+            >
+              {EVENTS.map((evt) => (
+                <option key={evt} value={evt}>
+                  {evt}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="mb-4">
