@@ -99,14 +99,16 @@ function App() {
     XLSX.writeFile(wb, filename);
   };
 
-  const filteredFamilies = families.filter((family) => {
-    const matchesSearch = family.familyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      family.members.some((member) =>
-        member.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    const matchesEvent = selectedEvent === 'All' || family.event === selectedEvent;
-    return matchesSearch && matchesEvent;
-  });
+  const filteredFamilies = families
+    .filter((family) => {
+      const matchesSearch = family.familyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        family.members.some((member) =>
+          member.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      const matchesEvent = selectedEvent === 'All' || family.event === selectedEvent;
+      return matchesSearch && matchesEvent;
+    })
+    .sort((a, b) => a.familyName.localeCompare(b.familyName));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">

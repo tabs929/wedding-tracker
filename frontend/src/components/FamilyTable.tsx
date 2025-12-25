@@ -47,9 +47,6 @@ const FamilyTable = ({ families, loading, onEdit, onDelete }: FamilyTableProps) 
                 Total Guests
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Attending
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -57,7 +54,6 @@ const FamilyTable = ({ families, loading, onEdit, onDelete }: FamilyTableProps) 
           <tbody className="bg-white divide-y divide-gray-200">
             {families.map((family) => {
               const totalMembers = family.members.length;
-              const attending = family.members.filter((m) => m.attending).length;
               
               return (
                 <tr key={family._id} className="hover:bg-gray-50">
@@ -79,7 +75,6 @@ const FamilyTable = ({ families, loading, onEdit, onDelete }: FamilyTableProps) 
                     <div className="text-sm text-gray-900">
                       {family.members.map((member, idx) => (
                         <div key={idx} className="flex items-center space-x-2 mb-1">
-                          <span className={`inline-block w-2 h-2 rounded-full ${member.attending ? 'bg-green-500' : 'bg-red-500'}`}></span>
                           <span>{member.name}</span>
                           <span className="text-gray-500">({member.gender === 'male' ? 'M' : 'F'})</span>
                         </div>
@@ -88,17 +83,6 @@ const FamilyTable = ({ families, loading, onEdit, onDelete }: FamilyTableProps) 
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">{totalMembers}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      attending === totalMembers 
-                        ? 'bg-green-100 text-green-800' 
-                        : attending > 0 
-                        ? 'bg-yellow-100 text-yellow-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {attending}/{totalMembers}
-                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                     <button

@@ -148,15 +148,6 @@ const FamilyFormModal = ({ isOpen, onClose, onSubmit, family }: FamilyFormModalP
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                   </select>
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={member.attending}
-                      onChange={(e) => updateMember(index, 'attending', e.target.checked)}
-                      className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                    />
-                    <span className="text-sm text-gray-700">Attending</span>
-                  </label>
                   <button
                     type="button"
                     onClick={() => removeMember(index)}

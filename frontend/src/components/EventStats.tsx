@@ -27,15 +27,13 @@ const EventStats = ({ families, loading }: EventStatsProps) => {
   const eventStats = EVENTS.map((event) => {
     const eventFamilies = families.filter((f) => f.event === event);
     const allMembers = eventFamilies.flatMap((f) => f.members);
-    const attendingMembers = allMembers.filter((m) => m.attending);
     
     return {
       event,
       totalFamilies: eventFamilies.length,
-      totalGuests: attendingMembers.length,
-      males: attendingMembers.filter((m) => m.gender === 'male').length,
-      females: attendingMembers.filter((m) => m.gender === 'female').length,
-      notAttending: allMembers.length - attendingMembers.length,
+      totalGuests: allMembers.length,
+      males: allMembers.filter((m) => m.gender === 'male').length,
+      females: allMembers.filter((m) => m.gender === 'female').length,
     };
   });
 

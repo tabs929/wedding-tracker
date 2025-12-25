@@ -20,8 +20,6 @@ export interface Statistics {
   totalGuests: number;
   totalMen: number;
   totalWomen: number;
-  totalAttending: number;
-  totalNotAttending: number;
 }
 
 export interface FamilyFormData {

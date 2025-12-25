@@ -90,18 +90,11 @@ export const getStatistics = async (req: Request, res: Response): Promise<void> 
     
     let totalMen = 0;
     let totalWomen = 0;
-    let totalAttending = 0;
-    let totalNotAttending = 0;
     
     families.forEach(family => {
       family.members.forEach(member => {
-        if (member.attending) {
-          totalAttending++;
-          if (member.gender === 'male') totalMen++;
-          if (member.gender === 'female') totalWomen++;
-        } else {
-          totalNotAttending++;
-        }
+        if (member.gender === 'male') totalMen++;
+        if (member.gender === 'female') totalWomen++;
       });
     });
     
@@ -109,9 +102,7 @@ export const getStatistics = async (req: Request, res: Response): Promise<void> 
       totalFamilies: families.length,
       totalGuests: totalMen + totalWomen,
       totalMen,
-      totalWomen,
-      totalAttending,
-      totalNotAttending
+      totalWomen
     });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching statistics', error });
