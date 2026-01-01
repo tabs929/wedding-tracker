@@ -41,7 +41,8 @@ const FamilyFormModal = ({ isOpen, onClose, onSubmit, family }: FamilyFormModalP
     updatedMembers[index] = { ...updatedMembers[index], [field]: value };
     setMembers(updatedMembers);
   };
-toggleEvent = (event: EventType) => {
+
+  const toggleEvent = (event: EventType) => {
     if (events.includes(event)) {
       setEvents(events.filter(e => e !== event));
     } else {

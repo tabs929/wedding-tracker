@@ -29,7 +29,7 @@ function App() {
       setStats(statsData);
     } catch (error) {
       console.error('Error fetching data:', error);
-      alert('Failed to load data. Make sure the backend server is running on port 5001.');
+      alert('Failed to load data. Please check your internet connection and try again.');
     } finally {
       setLoading(false);
     }
@@ -75,9 +75,16 @@ function App() {
   };
 
   const handleExportToExcel = () => {
-    // Prepare data for export - duplicate rows for each event
+    // Prepare data for export - only includes filtered families and events
     const exportData = filteredFamilies.flatMap((family) => {
-      const familyEvents = family.events || (family.event ? [family.event] : ['Not Set']);
+      // If a specific event is selected, only export that event
+      let familyEvents = family.events || (family.event ? [family.event] : ['Not Set']);
+      
+      // Filter to only selected event if not "All"
+      if (selectedEvent !== 'All') {
+        familyEvents = familyEvents.filter(evt => evt === selectedEvent);
+      }
+      
       return familyEvents.flatMap(event =>
         family.members.map((member) => ({
           'Family Name': family.familyName,
@@ -94,12 +101,119 @@ function App() {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Guest List');
 
-    // Generate filename with current date
+    // Generate filename with current date and event filter
     const date = new Date().toISOString().split('T')[0];
-    const filename = `Pallavi-Shadi-Guest-List-${date}.xlsx`;
+    const eventSuffix = selectedEvent !== 'All' ? `-${selectedEvent.replace(/\s+/g, '-')}` : '';
+    const filename = `Pallavi-Shadi-Guest-List${eventSuffix}-${date}.xlsx`;
 
     // Download file
     XLSX.writeFile(wb, filename);
+  };
+
+  const handlePrint = () => {
+    // Create printable content from filtered families
+    const printWindow = window.open('', '', 'width=800,height=600');
+    if (!printWindow) {
+      alert('Please allow pop-ups to print');
+      return;
+    }
+
+    const printData = filteredFamilies.flatMap((family) => {
+      // If a specific event is selected, only print that event
+      let familyEvents = family.events || (family.event ? [family.event] : ['Not Set']);
+      
+      if (selectedEvent !== 'All') {
+        familyEvents = familyEvents.filter(evt => evt === selectedEvent);
+      }
+      
+      return familyEvents.map(event => ({
+        family: family.familyName,
+        event,
+        members: family.members,
+        memberCount: family.members.length
+      }));
+    });
+
+    const totalGuests = printData.reduce((sum, item) => sum + item.memberCount, 0);
+    const filterText = selectedEvent !== 'All' ? ` - ${selectedEvent}` : ' - All Events';
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Guest List${filterText}</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            h1 { color: #4F46E5; text-align: center; }
+            .summary { margin: 20px 0; padding: 15px; background: #F3F4F6; border-radius: 8px; }
+            .filter-info { color: #059669; font-weight: bold; margin-bottom: 10px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+            th { background-color: #4F46E5; color: white; }
+            tr:nth-child(even) { background-color: #f9f9f9; }
+            .member-list { list-style: none; padding: 0; margin: 5px 0; }
+            .member-item { padding: 3px 0; }
+            .gender-badge { 
+              display: inline-block; 
+              padding: 2px 8px; 
+              border-radius: 4px; 
+              font-size: 12px; 
+              margin-left: 8px;
+            }
+            .male { background: #DBEAFE; color: #1E40AF; }
+            .female { background: #FCE7F3; color: #BE185D; }
+            @media print {
+              button { display: none; }
+            }
+          </style>
+        </head>
+        <body>
+          <h1>💒 Pallavi ki Shadi - Guest List</h1>
+          <div class="summary">
+            <div class="filter-info">Filter: ${filterText}</div>
+            <div>Total Families: ${filteredFamilies.length}</div>
+            <div>Total Guests: ${totalGuests}</div>
+            <div>Date: ${new Date().toLocaleDateString()}</div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Family Name</th>
+                <th>Event</th>
+                <th>Members</th>
+                <th>Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${printData.map(item => `
+                <tr>
+                  <td><strong>${item.family}</strong></td>
+                  <td>${item.event}</td>
+                  <td>
+                    <ul class="member-list">
+                      ${item.members.map(m => `
+                        <li class="member-item">
+                          ${m.name}
+                          <span class="gender-badge ${m.gender}">${m.gender === 'male' ? 'M' : 'F'}</span>
+                        </li>
+                      `).join('')}
+                    </ul>
+                  </td>
+                  <td>${item.memberCount}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          <script>
+            window.onload = function() {
+              window.print();
+            }
+          </script>
+        </body>
+      </html>
+    `);
+    
+    printWindow.document.close();
   };
 
   const filteredFamilies = families
@@ -108,9 +222,14 @@ function App() {
         family.members.some((member) =>
           member.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
-      // Handle both new events array and old event field
-      const familyEvents = family.events || (family.event ? [family.event] : []);
+      
+      // Handle both new events array and old event field - ensure we have an array
+      let familyEvents = family.events && family.events.length > 0 
+        ? family.events 
+        : (family.event ? [family.event] : []);
+      
       const matchesEvent = selectedEvent === 'All' || familyEvents.includes(selectedEvent);
+      
       return matchesSearch && matchesEvent;
     })
     .sort((a, b) => a.familyName.localeCompare(b.familyName));
@@ -157,10 +276,18 @@ function App() {
           </div>
           <div className="flex gap-2 w-full md:w-auto">
             <button
-              onClick={handleExportToExcel}
-              className="flex-1 md:flex-none px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium shadow-md hover:shadow-lg transition-all"
+              onClick={handlePrint}
+              className="flex-1 md:flex-none px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium shadow-md hover:shadow-lg transition-all"
+              title={selectedEvent !== 'All' ? `Print ${selectedEvent} list` : 'Print all events'}
             >
-              📥 Export Excel
+              🖨️ Print
+            </button>
+            <button
+              onClick={handleExportToExcel}
+              className="flex-1 md:flex-none px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium shadow-md hover:shadow-lg transition-all"
+              title={selectedEvent !== 'All' ? `Export ${selectedEvent} to Excel` : 'Export all events to Excel'}
+            >
+              📥 Excel
             </button>
             <button
               onClick={() => setIsModalOpen(true)}
