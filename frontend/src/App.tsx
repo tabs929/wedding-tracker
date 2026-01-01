@@ -74,11 +74,34 @@ function App() {
     setEditingFamily(null);
   };
 
+  const getFilteredFamilies = () => {
+    return families
+      .filter((family) => {
+        const matchesSearch = family.familyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          family.members.some((member) =>
+            member.name.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+        
+        // Handle both new events array and old event field - ensure we have an array
+        let familyEvents = family.events && family.events.length > 0 
+          ? family.events 
+          : (family.event ? [family.event] : []);
+        
+        const matchesEvent = selectedEvent === 'All' || familyEvents.includes(selectedEvent);
+        
+        return matchesSearch && matchesEvent;
+      })
+      .sort((a, b) => a.familyName.localeCompare(b.familyName));
+  };
+
   const handleExportToExcel = () => {
+    const filteredFamilies = getFilteredFamilies();
     // Prepare data for export - only includes filtered families and events
     const exportData = filteredFamilies.flatMap((family) => {
       // If a specific event is selected, only export that event
-      let familyEvents = family.events || (family.event ? [family.event] : ['Not Set']);
+      let familyEvents = family.events && family.events.length > 0 
+        ? family.events 
+        : (family.event ? [family.event] : ['Not Set']);
       
       // Filter to only selected event if not "All"
       if (selectedEvent !== 'All') {
@@ -111,6 +134,8 @@ function App() {
   };
 
   const handlePrint = () => {
+    const filteredFamilies = getFilteredFamilies();
+    
     // Create printable content from filtered families
     const printWindow = window.open('', '', 'width=800,height=600');
     if (!printWindow) {
@@ -120,7 +145,9 @@ function App() {
 
     const printData = filteredFamilies.flatMap((family) => {
       // If a specific event is selected, only print that event
-      let familyEvents = family.events || (family.event ? [family.event] : ['Not Set']);
+      let familyEvents = family.events && family.events.length > 0 
+        ? family.events 
+        : (family.event ? [family.event] : ['Not Set']);
       
       if (selectedEvent !== 'All') {
         familyEvents = familyEvents.filter(evt => evt === selectedEvent);
@@ -216,23 +243,7 @@ function App() {
     printWindow.document.close();
   };
 
-  const filteredFamilies = families
-    .filter((family) => {
-      const matchesSearch = family.familyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        family.members.some((member) =>
-          member.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      
-      // Handle both new events array and old event field - ensure we have an array
-      let familyEvents = family.events && family.events.length > 0 
-        ? family.events 
-        : (family.event ? [family.event] : []);
-      
-      const matchesEvent = selectedEvent === 'All' || familyEvents.includes(selectedEvent);
-      
-      return matchesSearch && matchesEvent;
-    })
-    .sort((a, b) => a.familyName.localeCompare(b.familyName));
+  const filteredFamilies = getFilteredFamilies();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
