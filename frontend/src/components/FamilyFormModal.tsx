@@ -19,7 +19,9 @@ const FamilyFormModal = ({ isOpen, onClose, onSubmit, family }: FamilyFormModalP
     if (family) {
       setFamilyName(family.familyName);
       // Handle backward compatibility: convert old event field to events array
-      setEvents(family.events || (family.event ? [family.event] : []));
+      setEvents(family.events && family.events.length > 0 
+        ? family.events 
+        : (family.event ? [family.event] : []));
       setMembers(family.members);
     } else {
       setFamilyName('');

@@ -27,7 +27,9 @@ const EventStats = ({ families, loading }: EventStatsProps) => {
   const eventStats = EVENTS.map((event) => {
     // Handle both new events array and old event field
     const eventFamilies = families.filter((f) => {
-      const familyEvents = f.events || (f.event ? [f.event] : []);
+      const familyEvents = f.events && f.events.length > 0 
+        ? f.events 
+        : (f.event ? [f.event] : []);
       return familyEvents.includes(event);
     });
     const allMembers = eventFamilies.flatMap((f) => f.members);
