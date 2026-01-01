@@ -4,7 +4,7 @@ export interface Member {
   attending: boolean;
 }
 
-export type EventType = 'Engagement' | 'Devkarya' | 'Sangeet' | 'Marriage morning' | 'Marriage afternoon';
+export type EventType = 'Engagement' | 'Devkarya' | 'Sangeet' | 'Marriage morning' | 'Marriage afternoon reception';
 
 export interface Family {
   _id: string;

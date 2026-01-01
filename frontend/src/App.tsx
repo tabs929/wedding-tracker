@@ -7,7 +7,7 @@ import FamilyTable from './components/FamilyTable';
 import FamilyFormModal from './components/FamilyFormModal';
 import EventStats from './components/EventStats';
 
-const EVENTS: EventType[] = ['Engagement', 'Devkarya', 'Sangeet', 'Marriage morning', 'Marriage afternoon'];
+const EVENTS: EventType[] = ['Engagement', 'Devkarya', 'Sangeet', 'Marriage morning', 'Marriage afternoon reception'];
 
 function App() {
   const [families, setFamilies] = useState<Family[]>([]);

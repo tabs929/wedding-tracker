@@ -8,8 +8,8 @@ export interface IMember {
 
 export interface IFamily extends Document {
   familyName: string;
-  events: Array<'Engagement' | 'Devkarya' | 'Sangeet' | 'Marriage morning' | 'Marriage afternoon'>;
-  event?: 'Engagement' | 'Devkarya' | 'Sangeet' | 'Marriage morning' | 'Marriage afternoon'; // Deprecated, for backward compatibility
+  events: Array<'Engagement' | 'Devkarya' | 'Sangeet' | 'Marriage morning' | 'Marriage afternoon reception'>;
+  event?: 'Engagement' | 'Devkarya' | 'Sangeet' | 'Marriage morning' | 'Marriage afternoon reception'; // Deprecated, for backward compatibility
   members: IMember[];
   createdAt: Date;
   updatedAt: Date;
@@ -41,12 +41,12 @@ const FamilySchema = new Schema<IFamily>(
     },
     events: {
       type: [String],
-      enum: ['Engagement', 'Devkarya', 'Sangeet', 'Marriage morning', 'Marriage afternoon'],
+      enum: ['Engagement', 'Devkarya', 'Sangeet', 'Marriage morning', 'Marriage afternoon reception'],
       default: []
     },
     event: {
       type: String,
-      enum: ['Engagement', 'Devkarya', 'Sangeet', 'Marriage morning', 'Marriage afternoon'],
+      enum: ['Engagement', 'Devkarya', 'Sangeet', 'Marriage morning', 'Marriage afternoon reception'],
       required: false
     },
     members: [MemberSchema]

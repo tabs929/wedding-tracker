@@ -8,7 +8,7 @@ interface FamilyFormModalProps {
   family?: Family | null;
 }
 
-const EVENTS: EventType[] = ['Engagement', 'Devkarya', 'Sangeet', 'Marriage morning', 'Marriage afternoon'];
+const EVENTS: EventType[] = ['Engagement', 'Devkarya', 'Sangeet', 'Marriage morning', 'Marriage afternoon reception'];
 
 const FamilyFormModal = ({ isOpen, onClose, onSubmit, family }: FamilyFormModalProps) => {
   const [familyName, setFamilyName] = useState('');
