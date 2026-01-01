@@ -67,8 +67,7 @@ toggleEvent = (event: EventType) => {
       alert('Please fill in all member names');
       return;
     }
-    onSubmit({ familyName, events
-    onSubmit({ familyName, event, members });
+    onSubmit({ familyName, events, members });
     onClose();
   };
 
