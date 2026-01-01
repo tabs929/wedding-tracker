@@ -95,7 +95,19 @@ toggleEvent = (event: EventType) => {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Family Name *
             </label>
-            <inputs * (Select all that apply)
+            <input
+              type="text"
+              value={familyName}
+              onChange={(e) => setFamilyName(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="Enter family name"
+              required
+            />
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Events * (Select all that apply)
             </label>
             <div className="space-y-2 border border-gray-300 rounded-md p-3">
               {EVENTS.map((evt) => (
@@ -109,19 +121,7 @@ toggleEvent = (event: EventType) => {
                   <span className="text-sm text-gray-700">{evt}</span>
                 </label>
               ))}
-            </div
-            <select
-              value={event}
-              onChange={(e) => setEvent(e.target.value as EventType)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              required
-            >
-              {EVENTS.map((evt) => (
-                <option key={evt} value={evt}>
-                  {evt}
-                </option>
-              ))}
-            </select>
+            </div>
           </div>
 
           <div className="mb-4">
