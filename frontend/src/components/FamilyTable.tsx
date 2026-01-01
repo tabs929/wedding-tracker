@@ -60,8 +60,16 @@ const FamilyTable = ({ families, loading, onEdit, onDelete }: FamilyTableProps) 
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">{family.familyName}</div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {family.event ? (
+                  <td className="px-6 py-4">
+                    {family.events && family.events.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {family.events.map((evt, idx) => (
+                          <span key={idx} className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                            {evt}
+                          </span>
+                        ))}
+                      </div>
+                    ) : family.event ? (
                       <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
                         {family.event}
                       </span>

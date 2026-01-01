@@ -4,7 +4,7 @@ import type { Family, Member, EventType } from '../types';
 interface FamilyFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { familyName: string; event: EventType; members: Member[] }) => void;
+  onSubmit: (data: { familyName: string; events: EventType[]; members: Member[] }) => void;
   family?: Family | null;
 }
 
@@ -12,17 +12,18 @@ const EVENTS: EventType[] = ['Engagement', 'Devkarya', 'Sangeet', 'Marriage morn
 
 const FamilyFormModal = ({ isOpen, onClose, onSubmit, family }: FamilyFormModalProps) => {
   const [familyName, setFamilyName] = useState('');
-  const [event, setEvent] = useState<EventType>('Engagement');
+  const [events, setEvents] = useState<EventType[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
 
   useEffect(() => {
     if (family) {
       setFamilyName(family.familyName);
-      setEvent(family.event || 'Engagement');
+      // Handle backward compatibility: convert old event field to events array
+      setEvents(family.events || (family.event ? [family.event] : []));
       setMembers(family.members);
     } else {
       setFamilyName('');
-      setEvent('Engagement');
+      setEvents([]);
       setMembers([]);
     }
   }, [family, isOpen]);
@@ -40,11 +41,22 @@ const FamilyFormModal = ({ isOpen, onClose, onSubmit, family }: FamilyFormModalP
     updatedMembers[index] = { ...updatedMembers[index], [field]: value };
     setMembers(updatedMembers);
   };
+toggleEvent = (event: EventType) => {
+    if (events.includes(event)) {
+      setEvents(events.filter(e => e !== event));
+    } else {
+      setEvents([...events, event]);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!familyName.trim()) {
       alert('Please enter a family name');
+      return;
+    }
+    if (events.length === 0) {
+      alert('Please select at least one event');
       return;
     }
     if (members.length === 0) {
@@ -55,6 +67,7 @@ const FamilyFormModal = ({ isOpen, onClose, onSubmit, family }: FamilyFormModalP
       alert('Please fill in all member names');
       return;
     }
+    onSubmit({ familyName, events
     onSubmit({ familyName, event, members });
     onClose();
   };
@@ -83,20 +96,21 @@ const FamilyFormModal = ({ isOpen, onClose, onSubmit, family }: FamilyFormModalP
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Family Name *
             </label>
-            <input
-              type="text"
-              value={familyName}
-              onChange={(e) => setFamilyName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Enter family name"
-              required
-            />
-          </div>
-
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Event *
+            <inputs * (Select all that apply)
             </label>
+            <div className="space-y-2 border border-gray-300 rounded-md p-3">
+              {EVENTS.map((evt) => (
+                <label key={evt} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                  <input
+                    type="checkbox"
+                    checked={events.includes(evt)}
+                    onChange={() => toggleEvent(evt)}
+                    className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                  />
+                  <span className="text-sm text-gray-700">{evt}</span>
+                </label>
+              ))}
+            </div
             <select
               value={event}
               onChange={(e) => setEvent(e.target.value as EventType)}

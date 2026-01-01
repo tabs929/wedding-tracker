@@ -5,7 +5,16 @@ import Family from '../models/Family';
 export const getAllFamilies = async (req: Request, res: Response): Promise<void> => {
   try {
     const { event } = req.query;
-    const filter = event ? { event } : {};
+    let filter: any = {};
+    
+    if (event) {
+      // Support both new events array and old event field
+      filter.$or = [
+        { events: event },
+        { event: event }
+      ];
+    }
+    
     const families = await Family.find(filter).sort({ createdAt: -1 });
     res.json(families);
   } catch (error) {
@@ -30,11 +39,11 @@ export const getFamilyById = async (req: Request, res: Response): Promise<void> 
 // Create new family
 export const createFamily = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { familyName, event, members } = req.body;
+    const { familyName, events, members } = req.body;
     
     const newFamily = new Family({
       familyName,
-      event,
+      events: events || [],
       members: members || []
     });
     
@@ -48,11 +57,11 @@ export const createFamily = async (req: Request, res: Response): Promise<void> =
 // Update family
 export const updateFamily = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { familyName, event, members } = req.body;
+    const { familyName, events, members } = req.body;
     
     const updatedFamily = await Family.findByIdAndUpdate(
       req.params.id,
-      { familyName, event, members },
+      { familyName, events, members },
       { new: true, runValidators: true }
     );
     

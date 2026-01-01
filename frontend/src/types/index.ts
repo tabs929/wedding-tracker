@@ -9,7 +9,8 @@ export type EventType = 'Engagement' | 'Devkarya' | 'Sangeet' | 'Marriage mornin
 export interface Family {
   _id: string;
   familyName: string;
-  event?: EventType;
+  events: EventType[];
+  event?: EventType; // Deprecated, for backward compatibility
   members: Member[];
   createdAt: string;
   updatedAt: string;
@@ -24,6 +25,6 @@ export interface Statistics {
 
 export interface FamilyFormData {
   familyName: string;
-  event: EventType;
+  events: EventType[];
   members: Member[];
 }

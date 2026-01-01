@@ -8,7 +8,8 @@ export interface IMember {
 
 export interface IFamily extends Document {
   familyName: string;
-  event: 'Engagement' | 'Devkarya' | 'Sangeet' | 'Marriage morning' | 'Marriage afternoon';
+  events: Array<'Engagement' | 'Devkarya' | 'Sangeet' | 'Marriage morning' | 'Marriage afternoon'>;
+  event?: 'Engagement' | 'Devkarya' | 'Sangeet' | 'Marriage morning' | 'Marriage afternoon'; // Deprecated, for backward compatibility
   members: IMember[];
   createdAt: Date;
   updatedAt: Date;
@@ -38,10 +39,15 @@ const FamilySchema = new Schema<IFamily>(
       required: true,
       trim: true
     },
+    events: {
+      type: [String],
+      enum: ['Engagement', 'Devkarya', 'Sangeet', 'Marriage morning', 'Marriage afternoon'],
+      default: []
+    },
     event: {
       type: String,
       enum: ['Engagement', 'Devkarya', 'Sangeet', 'Marriage morning', 'Marriage afternoon'],
-      required: true
+      required: false
     },
     members: [MemberSchema]
   },

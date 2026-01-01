@@ -39,7 +39,7 @@ function App() {
     fetchData();
   }, []);
 
-  const handleAddFamily = async (data: { familyName: string; event: EventType; members: any[] }) => {
+  const handleAddFamily = async (data: { familyName: string; events: EventType[]; members: any[] }) => {
     try {
       if (editingFamily) {
         await familyApi.updateFamily(editingFamily._id, data);
@@ -75,16 +75,19 @@ function App() {
   };
 
   const handleExportToExcel = () => {
-    // Prepare data for export
-    const exportData = filteredFamilies.flatMap((family) => 
-      family.members.map((member) => ({
-        'Family Name': family.familyName,
-        'Event': family.event || 'Not Set',
-        'Member Name': member.name,
-        'Gender': member.gender === 'male' ? 'Male' : 'Female',
-        'Attending': member.attending ? 'Yes' : 'No',
-      }))
-    );
+    // Prepare data for export - duplicate rows for each event
+    const exportData = filteredFamilies.flatMap((family) => {
+      const familyEvents = family.events || (family.event ? [family.event] : ['Not Set']);
+      return familyEvents.flatMap(event =>
+        family.members.map((member) => ({
+          'Family Name': family.familyName,
+          'Event': event,
+          'Member Name': member.name,
+          'Gender': member.gender === 'male' ? 'Male' : 'Female',
+          'Attending': member.attending ? 'Yes' : 'No',
+        }))
+      );
+    });
 
     // Create worksheet and workbook
     const ws = XLSX.utils.json_to_sheet(exportData);
@@ -105,7 +108,9 @@ function App() {
         family.members.some((member) =>
           member.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
-      const matchesEvent = selectedEvent === 'All' || family.event === selectedEvent;
+      // Handle both new events array and old event field
+      const familyEvents = family.events || (family.event ? [family.event] : []);
+      const matchesEvent = selectedEvent === 'All' || familyEvents.includes(selectedEvent);
       return matchesSearch && matchesEvent;
     })
     .sort((a, b) => a.familyName.localeCompare(b.familyName));
