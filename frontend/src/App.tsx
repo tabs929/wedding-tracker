@@ -96,27 +96,29 @@ function App() {
 
   const handleExportToExcel = () => {
     const filteredFamilies = getFilteredFamilies();
-    // Prepare data for export - only includes filtered families and events
+    
+    // Prepare data for export - one row per member with Yes/No for each event
     const exportData = filteredFamilies.flatMap((family) => {
-      // If a specific event is selected, only export that event
+      // Get family's events
       let familyEvents = family.events && family.events.length > 0 
         ? family.events 
-        : (family.event ? [family.event] : ['Not Set']);
+        : (family.event ? [family.event] : []);
       
-      // Filter to only selected event if not "All"
-      if (selectedEvent !== 'All') {
-        familyEvents = familyEvents.filter(evt => evt === selectedEvent);
-      }
-      
-      return familyEvents.flatMap(event =>
-        family.members.map((member) => ({
+      // Create one row per member
+      return family.members.map((member) => {
+        const row: any = {
           'Family Name': family.familyName,
-          'Event': event,
           'Member Name': member.name,
           'Gender': member.gender === 'male' ? 'Male' : 'Female',
-          'Attending': member.attending ? 'Yes' : 'No',
-        }))
-      );
+        };
+        
+        // Add Yes/No for each event
+        EVENTS.forEach(event => {
+          row[event] = familyEvents.includes(event) ? 'Yes' : 'No';
+        });
+        
+        return row;
+      });
     });
 
     // Create worksheet and workbook
