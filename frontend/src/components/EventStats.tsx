@@ -5,7 +5,7 @@ interface EventStatsProps {
   loading: boolean;
 }
 
-const EVENTS: EventType[] = ['Engagement', 'Devkarya', 'Sangeet', 'Marriage morning', 'Marriage afternoon reception'];
+const EVENTS: EventType[] = ['Engagement', 'Devkarya', 'Sangeet', 'Marriage morning', 'Marriage afternoon reception', 'Night reception'];
 
 const EventStats = ({ families, loading }: EventStatsProps) => {
   if (loading) {
